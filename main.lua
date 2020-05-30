@@ -16,14 +16,7 @@ love.window.setTitle(title)
 function love.load()
 	--Load 
 	
-	dt = dt
 
-	-- Current scene 
-	scene = "Intro"
-		
-	-- Background
-	background = love.graphics.newImage("background.jpg")	
-	
 	-- Window
 	width, height = love.graphics.getDimensions( )	
 
@@ -33,72 +26,18 @@ function love.load()
 			top = 0,
 			bottom = height
 		 }
+	--Game
+	game = 	{
+				
+			scene = "Intro",
+			background = love.graphics.newImage("background.jpg"),
+			score = 0,
+			score_increase_factor = 1 * love.timer.getDelta()
 
-
-	--Movemewidth, height = love.graphics.getDimensions(https://love2d.org/forums/viewtopic.php?t=83638)	
-	-- movePlayer = true
-
-	--player
-
+			
+		}
 	
-	player_img = love.graphics.newImage("player.png")
-	player = {
-		 	x = window.right/2,
-			y = window.bottom/2,
-			rotation = math.rad(0),
-			width = player_img:getWidth(),
-			height = player_img:getHeight(),
-			bottom,
-			top,
-			bottom,
-			bottom,
-			left,
-			right,
-		 }
-	
-	--player_sprite = love.graphics.newQuad(player.x, player.y, player.width, player.height, player.width, player.height)
-   	player_sprite = love.graphics.newQuad(0, 0, 
-					player_img:getWidth(), player_img:getHeight(), 
-					player_img:getWidth(), player_img:getHeight())
 
-	--Score
-	score = 0
-	score_increase_factor = 1 * love.timer.getDelta()
-	
-	--Pipes
-	pipe_img = love.graphics.newImage("pipe.png")
-	pipe = {
-		 	x = window.right/2,
-			y = window.bottom/2,
-			rotation = math.rad(0),
-			width = pipe_img:getWidth(),
-			height = pipe_img:getHeight(),
-			bottom,
-			top,
-			bottom,
-			bottom,
-			left,
-			right,
-		 }
-	
-	--pipe_sprite
-   	pipe_sprite = love.graphics.newQuad(0, 0, 
-					pipe_img:getWidth(), pipe_img:getHeight(), 
-					pipe_img:getWidth(), pipe_img:getHeight())
-
-
-	--Colors
-	colors = {
-			white= {1, 1, 1},
-			pink = {255, 105, 180},
-			red = {1 ,0, 0}, 
-			yellow = {1, 1, 0}, 
-			green = {0, 1, 0}, 
-			blue = {0, 0, 1},
-			cyan = {0, 255, 255},
-			black = {0, 0, 0}
-		} 
-	
 
 
 end
@@ -106,9 +45,9 @@ end
 function love.mousepressed(x, y, button)
    	--mouse pressed
 	
-	if scene == "Intro"
+	if game.scene == "Intro"
 	then
-		scene = "1"
+		game.scene = "1"
 	else
 		move("up", player, 30000)
 	end
@@ -117,14 +56,16 @@ end
 function move(direction, player, speed)
 	--move
 
-	--dt : delta time
-	dt = love.timer.getDelta()
+
+	-- player
+	local player = require 'player'
+	print("Player", player, "X : ", player.x, "Y : ", player.y)
 	
 	-- speed
 	speed = speed or 200
 
 	--move unit 
-	move_unit = speed * dt
+	move_unit = speed * love.timer.getDelta()
 	
 	if direction == "up"
 	then
@@ -188,9 +129,11 @@ function love.keypressed(key, scancode, isrepeat)
 end
 
 function love.update(dt)
-	
+		
+	local player = require 'player'
+
 	--Update
-	score = score + score_increase_factor
+	game.score = game.score + game.score_increase_factor
 
 	-- Player is automatically falling down
 	move("down", player, 100)
@@ -200,16 +143,17 @@ end
 function draw_background(color)
 	-- Draw background
 	
+
 	-- Background
-	for i = 0, width / background:getWidth() 	
+	for i = 0, width / game.background:getWidth() 	
 	do
-        	for j = 0, height / background:getHeight() 		
+        	for j = 0, height / game.background:getHeight() 		
 		do
 			--Set color with parameter value
 			love.graphics.setColor(color)   
 
 			--Draw background
-			love.graphics.draw(background, i * background:getWidth(), j * background:getHeight())
+			love.graphics.draw(game.background, i * game.background:getWidth(), j * game.background:getHeight())
         		
 			--Reset after set
 			love.graphics.reset()
@@ -219,9 +163,13 @@ end
 
 function love.draw()
 	--Draw
-	
+	--
+	local colors = require 'colors'
+	local player = require 'player'
+	local pipe = require 'pipe'
+
 	-- Scene
-	if scene == "Intro"
+	if game.scene == "Intro"
 	then
 	   	-- Splash screen
     		--setColor(red, green, blue) 
@@ -229,7 +177,7 @@ function love.draw()
     		draw_background(colors.yellow)
 		love.graphics.print("Flappy bird",  320, 250, 0, 2, 2)
 
-	elseif scene == "1"
+	elseif game.scene == "1"
 	then
 		-- New scene (reset)
 		love.graphics.reset()
@@ -240,28 +188,15 @@ function love.draw()
 		--Pipe
 		pipe.x = 100
 		pipe.y = 100
-		love.graphics.draw(pipe_img, pipe_sprite, pipe.x, pipe.y)
+		love.graphics.draw(pipe.pipe_img, pipe.pipe_sprite, pipe.x, pipe.y)
 		
 		-- Player
 		--player_draw = love.graphics.draw(player_img, player_sprite, player.x, player.y)
-		love.graphics.draw(player_img, player_sprite, player.x, player.y)
+		love.graphics.draw(player.player_img, player.player_sprite, player.x, player.y)
 		
-    		love.graphics.print(math.floor(score/100),  window.right - 100, window.top + 20, 0, 2, 2)	
+    		love.graphics.print(math.floor(game.score/100),  window.right - 100, window.top + 20, 0, 2, 2)	
 	end
 	
 end
 
 
---[[
---
---Save colors in file
---
----- color.lua
--- holds definitions
-local color = {}
-color.red = {1,0,0}
--- ...
-return color
-
---- main.lua or elsewhere where you need to use colors
-local color = require 'color']]

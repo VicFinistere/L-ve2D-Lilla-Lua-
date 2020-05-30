@@ -49,11 +49,11 @@ function love.mousepressed(x, y, button)
 	then
 		game.scene = "1"
 	else
-		move("up", player, 30000)
+		move("up", 30000)
 	end
 end
 
-function move(direction, player, speed, dt)
+function move(direction, speed, dt)
 	--move
 
 
@@ -130,13 +130,11 @@ end
 
 function love.update(dt)
 		
-	local player = require 'player'
-
 	--Update
 	game.score = game.score + game.score_increase_factor
 
 	-- Player is automatically falling down
-	move("down", player, 100, dt)
+	move("down", 100, dt)
 end
 
 

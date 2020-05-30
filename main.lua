@@ -53,19 +53,19 @@ function love.mousepressed(x, y, button)
 	end
 end
 
-function move(direction, player, speed)
+function move(direction, player, speed, dt)
 	--move
 
 
 	-- player
 	local player = require 'player'
-	print("Player", player, "X : ", player.x, "Y : ", player.y)
 	
 	-- speed
 	speed = speed or 200
+	dt = dt or love.timer.getDelta()
 
 	--move unit 
-	move_unit = speed * love.timer.getDelta()
+	move_unit = speed * dt
 	
 	if direction == "up"
 	then
@@ -136,7 +136,7 @@ function love.update(dt)
 	game.score = game.score + game.score_increase_factor
 
 	-- Player is automatically falling down
-	move("down", player, 100)
+	move("down", player, 100, dt)
 end
 
 
